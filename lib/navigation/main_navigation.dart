@@ -3,6 +3,7 @@ import 'package:meowmedia/screen/bookmark_screen.dart';
 import 'package:meowmedia/screen/homescreen.dart';
 import 'package:meowmedia/screen/profile_screen.dart';
 import 'package:meowmedia/screen/search_screen.dart';
+import 'package:meowmedia/screen/upload_screen.dart';
 
 
 class MainNavigation extends StatefulWidget {
@@ -18,6 +19,7 @@ class _MainNavigationState extends State<MainNavigation> {
   final List<Widget> _pages = const [
     HomeScreen(),
     SearchScreen(),
+    UploadScreen(),
     BookmarkScreen(),
     ProfileScreen(),
   ];
@@ -59,11 +61,11 @@ class _MainNavigationState extends State<MainNavigation> {
               activeIcon: Icon(Icons.search),
               label: 'Search',
             ),
-            // BottomNavigationBarItem(
-            //   icon: Icon(Icons.add_box_outlined),
-            //   activeIcon: Icon(Icons.add_box),
-            //   label: 'Add',
-            // ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add_box_outlined),
+              activeIcon: Icon(Icons.add_box),
+              label: 'Add',
+            ),
             BottomNavigationBarItem(
               icon: Icon(Icons.bookmark_outline),
               activeIcon: Icon(Icons.bookmark),
