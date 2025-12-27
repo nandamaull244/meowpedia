@@ -1,6 +1,9 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:meowmedia/model/kategori_model.dart';
+import 'package:meowmedia/service/kategori_service.dart';
+import 'package:meowmedia/service/upload_service.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -13,30 +16,44 @@ class _UploadScreenState extends State<UploadScreen> {
   final _titleController = TextEditingController();
   final _descController = TextEditingController();
 
-  final List<String> categories = [
-    'Digital',
-    'Painting',
-    'Sculpture',
-    'Photography',
-  ];
+  List<KategoriModel> kategoriList = [];
+  KategoriModel? selectedCategory;
+  bool isLoadingKategori = true;
 
-  String? selectedCategory;
-  File? selectedImage;
+  Uint8List? selectedImageBytes;
+  XFile? selectedImage;
 
   final ImagePicker _picker = ImagePicker();
+  @override
+  void initState() {
+    super.initState();
+    loadKategori();
+  }
+
+  void resetForm() {
+    _titleController.clear();
+    _descController.clear();
+
+    setState(() {
+      selectedImageBytes = null;
+      selectedCategory = null;
+    });
+  }
 
   Future<void> pickImage() async {
-    final XFile? image =
-        await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
     if (image != null) {
+      final bytes = await image.readAsBytes();
       setState(() {
-        selectedImage = File(image.path);
+        selectedImage = image;
+        selectedImageBytes = bytes;
       });
     }
   }
 
-  void submit() {
-    if (selectedImage == null ||
+  Future<void> submit() async {
+    if (selectedImageBytes == null ||
         selectedCategory == null ||
         _titleController.text.isEmpty ||
         _descController.text.isEmpty) {
@@ -46,10 +63,58 @@ class _UploadScreenState extends State<UploadScreen> {
       return;
     }
 
-    // TODO: upload logic (API / local)
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Upload success 🎉')),
+    // SHOW LOADING
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
     );
+
+    try {
+      await UploadService().uploadBerita(
+        imageBytes: selectedImageBytes!,
+        judul: _titleController.text,
+        isi: _descController.text,
+        kategoriId: selectedCategory!.id,
+      );
+
+      if (!mounted) return;
+
+      // TUTUP LOADING
+      Navigator.of(context, rootNavigator: true).pop();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Upload success')),
+      );
+
+      resetForm();
+
+      // KEMBALI JIKA BISA
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context, true);
+      }
+
+    } catch (e) {
+      Navigator.of(context, rootNavigator: true).pop();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    }
+  }
+
+  Future<void> loadKategori() async {
+    try {
+      kategoriList = await KategoriService().getKategori();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
+    } finally {
+      setState(() {
+        isLoadingKategori = false;
+      });
+    }
   }
 
   @override
@@ -78,7 +143,7 @@ class _UploadScreenState extends State<UploadScreen> {
                     color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: selectedImage == null
+                  child: selectedImageBytes == null
                       ? const Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -89,8 +154,8 @@ class _UploadScreenState extends State<UploadScreen> {
                         )
                       : ClipRRect(
                           borderRadius: BorderRadius.circular(16),
-                          child: Image.file(
-                            selectedImage!,
+                          child: Image.memory(
+                            selectedImageBytes!,
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -105,27 +170,29 @@ class _UploadScreenState extends State<UploadScreen> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: categories.map((category) {
-                  final isSelected = selectedCategory == category;
-                  return ChoiceChip(
-                    label: Text(category),
-                    selected: isSelected,
-                    selectedColor:
-                        Theme.of(context).colorScheme.primary,
-                    labelStyle: TextStyle(
-                      color: isSelected ? Colors.white : Colors.black,
+              isLoadingKategori
+                  ? const Center(child: CircularProgressIndicator())
+                  : Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: kategoriList.map((kategori) {
+                        final isSelected = selectedCategory?.id == kategori.id;
+
+                        return ChoiceChip(
+                          label: Text(kategori.nama),
+                          selected: isSelected,
+                          selectedColor: Theme.of(context).colorScheme.primary,
+                          labelStyle: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black,
+                          ),
+                          onSelected: (_) {
+                            setState(() {
+                              selectedCategory = kategori;
+                            });
+                          },
+                        );
+                      }).toList(),
                     ),
-                    onSelected: (_) {
-                      setState(() {
-                        selectedCategory = category;
-                      });
-                    },
-                  );
-                }).toList(),
-              ),
 
               const SizedBox(height: 20),
 
