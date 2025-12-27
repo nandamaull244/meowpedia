@@ -2,8 +2,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowmedia/model/kategori_model.dart';
+import 'package:meowmedia/screen/homescreen.dart';
 import 'package:meowmedia/service/kategori_service.dart';
 import 'package:meowmedia/service/upload_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -53,55 +55,96 @@ class _UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> submit() async {
-    if (selectedImageBytes == null ||
-        selectedCategory == null ||
-        _titleController.text.isEmpty ||
-        _descController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please complete all fields')),
-      );
-      return;
-    }
+  if (selectedImageBytes == null ||
+      selectedCategory == null ||
+      _titleController.text.isEmpty ||
+      _descController.text.isEmpty) {
+    _showErrorDialog('Please complete all fields');
+    return;
+  }
 
-    // SHOW LOADING
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
+  // SHOW LOADING
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) =>  Center(child: CircularProgressIndicator(color: ThemeData.light().primaryColor)),
+  );
+
+  try {
+    await UploadService().uploadBerita(
+      imageBytes: selectedImageBytes!,
+      judul: _titleController.text,
+      isi: _descController.text,
+      kategoriId: selectedCategory!.id,
     );
 
-    try {
-      await UploadService().uploadBerita(
-        imageBytes: selectedImageBytes!,
-        judul: _titleController.text,
-        isi: _descController.text,
-        kategoriId: selectedCategory!.id,
-      );
+    if (!mounted) return;
 
-      if (!mounted) return;
+    // CLOSE LOADING
+    Navigator.of(context, rootNavigator: true).pop();
 
-      // TUTUP LOADING
-      Navigator.of(context, rootNavigator: true).pop();
+    // SUCCESS POPUP
+    _showSuccessDialog();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Upload success')),
-      );
+  } catch (e) {
+    if (!mounted) return;
 
-      resetForm();
+    // CLOSE LOADING
+    Navigator.of(context, rootNavigator: true).pop();
 
-      // KEMBALI JIKA BISA
-      if (Navigator.canPop(context)) {
-        Navigator.pop(context, true);
-      }
-
-    } catch (e) {
-      Navigator.of(context, rootNavigator: true).pop();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString())),
-      );
-    }
+    // ERROR POPUP
+    _showErrorDialog(e.toString());
   }
+}
+void _showSuccessDialog() {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => AlertDialog(
+      title: const Text('Upload Success'),
+      content: const Text('Your content has been uploaded successfully!'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(); // close dialog
+
+            resetForm();
+            print(Supabase.instance.client.auth.currentSession);
+
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              (route) => false,
+            );
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
+void _showErrorDialog(String message) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Upload Failed'),
+      content: Text(message),
+      actions: [
+        TextButton(
+            style: TextButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+          onPressed: () {
+            Navigator.of(context).pop(); // close dialog only
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
 
   Future<void> loadKategori() async {
     try {
