@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'auth/login_screen.dart'; // sesuaikan path
+import 'package:meowmedia/navigation/main_navigation.dart';
+import 'package:meowmedia/screen/auth/login_screen.dart';
+import 'package:meowmedia/service/auth_service.dart';
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,15 +17,24 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _checkSession();
+  }
 
-    // ⏱️ Delay 5 detik lalu pindah ke Login
-    Timer(const Duration(seconds: 5), () {
-      if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    });
+  Future<void> _checkSession() async {
+    final isLoggedIn = await AuthService.isLoggedIn();
+
+    // delay splash 3 detik
+    await Future.delayed(const Duration(seconds: 3));
+
+    if (!mounted) return;
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            isLoggedIn ? const MainNavigation() : const LoginScreen(),
+      ),
+    );
   }
 
   @override

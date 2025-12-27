@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:meowmedia/model/berita_model.dart';
 import 'package:meowmedia/model/news_model.dart';
 
 class NewsDetailScreenUser extends StatelessWidget {
-  final NewsModel news;
+  final BeritaModel berita;
   final bool isFromProfile;
 
   const NewsDetailScreenUser({
     super.key,
-    required this.news,
+    required this.berita,
     this.isFromProfile = false,
   });
 
@@ -56,7 +57,7 @@ class NewsDetailScreenUser extends StatelessWidget {
             ],
             flexibleSpace: FlexibleSpaceBar(
               background: Image.asset(
-                news.image,
+                berita.imageUrl,
                 fit: BoxFit.cover,
               ),
             ),
@@ -70,14 +71,14 @@ class NewsDetailScreenUser extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    news.category,
+                    berita.kategoriNama,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    news.title,
+                    berita.judul,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -85,15 +86,15 @@ class NewsDetailScreenUser extends StatelessWidget {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      Image.asset(news.logo, width: 20),
+                      Image.asset(berita.imageUrl, width: 20),
                       const SizedBox(width: 8),
-                      Text(news.author,
+                      Text(berita.full_name,
                           style: Theme.of(context).textTheme.bodySmall),
                       const SizedBox(width: 12),
                       const Icon(Icons.access_time,
                           size: 14, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text(news.timeAgo,
+                      Text(berita.tanggal.toIso8601String(),
                           style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),

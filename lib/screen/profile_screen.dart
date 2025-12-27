@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:meowmedia/model/berita_model.dart';
 import 'package:meowmedia/model/news_model.dart';
 import 'package:meowmedia/model/user_model.dart';
 import 'package:meowmedia/screen/auth/login_screen.dart';
 import 'package:meowmedia/screen/news_detail_user.dart';
 import 'package:meowmedia/service/auth_service.dart';
-import '../data/news_dummy.dart';
+import 'package:meowmedia/service/berita_user_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -14,8 +15,25 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final List<NewsModel> userPosts = List.from(dummyNews);
+  List<BeritaModel> userPosts = [];
+  bool isLoading = true;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadUserPosts();
+  }
+
+
+Future<void> _loadUserPosts() async {
+  final data = await BeritaServiceUser.getBeritaUser();
+  if (!mounted) return;
+
+  setState(() {
+    userPosts = data;
+    isLoading = false;
+  });
+}
   void _deletePost(NewsModel news) {
     setState(() {
       userPosts.remove(news);
@@ -131,14 +149,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
 
                   const SizedBox(height: 12),
+                  if(isLoading)
+                     Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor)),
+                  if(userPosts.isEmpty && !isLoading)
+                    Center(
+                      child: Text(
+                        'No posts available',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                      ),
+                    ), 
 
                   // 📰 POSTS GRID
-                  GridView.builder(
+                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: userPosts.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 6,
                       mainAxisSpacing: 6,
@@ -152,25 +178,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           final deleted = await Navigator.push<bool>(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  NewsDetailScreenUser(news: news),
+                              builder: (_) => NewsDetailScreenUser(
+                                berita: news,
+                              ),
                             ),
                           );
 
                           if (deleted == true) {
-                            _deletePost(news);
+                            setState(() {
+                              userPosts.removeAt(index);
+                            });
                           }
                         },
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(6),
-                          child: Image.asset(
-                            news.image,
+                          child: Image.network(
+                            news.imageUrl,
                             fit: BoxFit.cover,
                           ),
                         ),
                       );
                     },
-                  ),
+                  )
                 ],
               ),
             );

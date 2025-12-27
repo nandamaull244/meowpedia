@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:meowmedia/model/news_model.dart';
+import 'package:meowmedia/model/berita_model.dart';
 
 class NewsDetailScreen extends StatelessWidget {
-  final NewsModel news;
+  final BeritaModel berita;
 
   const NewsDetailScreen({
     super.key,
-    required this.news,
+    required this.berita,
   });
 
   @override
@@ -21,8 +21,8 @@ class NewsDetailScreen extends StatelessWidget {
             pinned: true,
             leading: const BackButton(color: Colors.white),
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
-                news.image,
+              background: Image.network(
+                berita.imageUrl,
                 fit: BoxFit.cover,
               ),
             ),
@@ -38,7 +38,7 @@ class NewsDetailScreen extends StatelessWidget {
 
                   // Category
                   Text(
-                    news.category,
+                    berita.kategoriNama,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -48,7 +48,7 @@ class NewsDetailScreen extends StatelessWidget {
 
                   // Title
                   Text(
-                    news.title,
+                    berita.judul,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -59,10 +59,10 @@ class NewsDetailScreen extends StatelessWidget {
                   // Source & time
                   Row(
                     children: [
-                      Image.asset(news.logo, width: 20),
+                      Image.network(berita.imageUrl, width: 20),
                       const SizedBox(width: 8),
                       Text(
-                        news.author,
+                        berita.full_name,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                       const SizedBox(width: 12),
@@ -70,7 +70,7 @@ class NewsDetailScreen extends StatelessWidget {
                           size: 14, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
-                        news.timeAgo,
+                        berita.tanggal.toIso8601String(),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -80,7 +80,7 @@ class NewsDetailScreen extends StatelessWidget {
 
                   // Dummy content
                   Text(
-                    news.description,
+                    berita.isi,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],

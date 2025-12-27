@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:meowmedia/model/news_model.dart';
+import 'package:meowmedia/model/berita_model.dart';
 import 'package:meowmedia/widget/news_card_widget.dart';
 
 class NewsListView extends StatelessWidget {
-  final List<NewsModel> newsList;
+  final List<BeritaModel> newsList;
 
   const NewsListView({
     super.key,

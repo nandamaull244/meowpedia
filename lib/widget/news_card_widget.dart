@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:meowmedia/model/news_model.dart';
+import 'package:meowmedia/model/berita_model.dart';
 import 'package:meowmedia/screen/news_detail_screen.dart';
 
 class NewsCard extends StatelessWidget {
-  final NewsModel news;
+  final BeritaModel news;
 
   const NewsCard({
     super.key,
@@ -18,7 +18,7 @@ class NewsCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => NewsDetailScreen(news: news),
+            builder: (_) => NewsDetailScreen(berita: news),
           ),
         );
       },
@@ -28,8 +28,8 @@ class NewsCard extends StatelessWidget {
           // 🖼️ Banner Image
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: Image.asset(
-              news.image,
+            child: Image.network(
+              news.imageUrl,
               height: 180,
               width: double.infinity,
               fit: BoxFit.cover,
@@ -46,7 +46,7 @@ class NewsCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              news.category,
+              news.kategoriNama,
               style: Theme.of(context).textTheme.labelLarge,
             ),
           ),
@@ -55,7 +55,7 @@ class NewsCard extends StatelessWidget {
 
           // 📰 Title
           Text(
-            news.title,
+            news.judul,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.headlineLarge,
@@ -69,14 +69,14 @@ class NewsCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Image.asset(
-                    news.logo,
+                  Image.network(
+                    news.imageUrl,
                     width: 20,
                     height: 20,
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    news.author,
+                    news.username,
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall
@@ -89,7 +89,7 @@ class NewsCard extends StatelessWidget {
                   const Icon(Icons.access_time, size: 14, color: Colors.grey),
                   const SizedBox(width: 4),
                   Text(
-                    news.timeAgo,
+                    news.tanggal.toIso8601String(),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
