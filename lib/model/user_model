@@ -1,0 +1,25 @@
+class UserModel {
+  final String idUser;
+  final String username;
+  final String full_name;
+  final String tgl_lahir;
+  final String? image_url;
+
+  UserModel({
+    required this.idUser,
+    required this.username,
+    required this.full_name,
+    required this.tgl_lahir,
+    this.image_url,
+  });
+
+  factory UserModel.fromMap(Map<String, dynamic> map) {
+    return UserModel(
+      idUser: map['id_user'],
+      username: map['username'],
+      full_name: map['full_name'],
+      tgl_lahir: map['tgl_lahir'],
+      image_url: map['image_url'], // dari storage (nullable)
+    );
+  }
+}

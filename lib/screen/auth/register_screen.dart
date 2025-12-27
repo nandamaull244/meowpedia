@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:meowmedia/screen/auth/login_screen.dart';
+import 'package:meowmedia/services/auth_service.dart';
 import 'package:meowmedia/widget/auth_widget.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -15,13 +16,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  bool _isLoading = false;
+
   bool _obscurePassword = true;
   DateTime? _selectedDate;
   @override
-  void dispose() {
-    _dateController.dispose();
-    super.dispose();
-  }
+void dispose() {
+  _fullNameController.dispose();
+  _usernameController.dispose();
+  _passwordController.dispose();
+  _dateController.dispose();
+  super.dispose();
+}
 
   Future<void> _selectDate(BuildContext context) async{
       final DateTime? pickedDate = await showDatePicker(
@@ -37,6 +43,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
     }
   }
+Future<void> _handleRegister() async {
+  // VALIDASI
+  if (_fullNameController.text.isEmpty ||
+      _usernameController.text.isEmpty ||
+      _passwordController.text.isEmpty ||
+      _selectedDate == null) {
+    SnackBar(content:Text('Semua field harus diisi'));
+    return;
+  }
+
+  try {
+    setState(() => _isLoading = true);
+
+    await AuthService.register(
+      username: _usernameController.text.trim(),
+      password: _passwordController.text,
+      fullName: _fullNameController.text.trim(),
+      tgl_lahir: _selectedDate!,
+    );
+
+    if (!mounted) return;
+
+    // Langsung ke Home (karena session sudah aktif)
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Register gagal: $e')),
+    );
+  } finally {
+    if (mounted) {
+      setState(() => _isLoading = false);
+    }
+  }
+}
 
 
   @override
@@ -129,11 +172,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 24),
         
               AuthButton(
-                text: 'Sign Up',
-                onPressed: () {
-                  
-                },
+                text: _isLoading ? 'Loading...' : 'Sign Up',
+                onPressed: _isLoading ? null :(){_handleRegister();} ,
               ),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

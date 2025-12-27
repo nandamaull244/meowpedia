@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meowmedia/model/news_model.dart';
 import 'package:meowmedia/screen/news_detail_user.dart';
+import 'package:meowmedia/services/auth_service.dart';
 import '../data/news_dummy.dart';
 import 'news_detail_screen.dart';
 
@@ -34,7 +35,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
             tooltip: 'Logout',
             icon:
                 Icon(Icons.logout_rounded, color: Theme.of(context).primaryColor),
-            onPressed: () {},
+            onPressed: () {
+              // Logout logic here
+              AuthService.logout();
+            },
           ),
         ],
       ),

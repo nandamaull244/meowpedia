@@ -57,12 +57,12 @@ class AuthTextField extends StatelessWidget {
 /// ================= BUTTON =================
 class AuthButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
 
   const AuthButton({
     super.key,
     required this.text,
-    required this.onPressed,
+     this.onPressed,
   });
 
   @override
