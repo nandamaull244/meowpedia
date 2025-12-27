@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:meowmedia/model/berita_model.dart';
+import 'package:meowmedia/service/bookmark_service.dart';
 
-class NewsDetailScreen extends StatelessWidget {
+class NewsDetailScreen extends StatefulWidget {
   final BeritaModel berita;
 
   const NewsDetailScreen({
@@ -10,11 +11,33 @@ class NewsDetailScreen extends StatelessWidget {
   });
 
   @override
+  State<NewsDetailScreen> createState() => _NewsDetailScreenState();
+}
+
+class _NewsDetailScreenState extends State<NewsDetailScreen> {
+  bool isBookmarked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkBookmark();
+  }
+
+  Future<void> _checkBookmark() async {
+    final bookmarked =
+        await BookmarkService.isBookmarked(widget.berita.id);
+
+    if (!mounted) return;
+
+    setState(() {
+      isBookmarked = bookmarked;
+    });
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
         slivers: [
-
           // 🖼️ Banner image
           SliverAppBar(
             expandedHeight: 260,
@@ -22,7 +45,7 @@ class NewsDetailScreen extends StatelessWidget {
             leading: const BackButton(color: Colors.white),
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
-                berita.imageUrl,
+                widget.berita.imageUrl,
                 fit: BoxFit.cover,
               ),
             ),
@@ -35,10 +58,9 @@ class NewsDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   // Category
                   Text(
-                    berita.kategoriNama,
+                    widget.berita.kategoriNama,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
@@ -47,11 +69,47 @@ class NewsDetailScreen extends StatelessWidget {
                   const SizedBox(height: 8),
 
                   // Title
-                  Text(
-                    berita.judul,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          widget.berita.judul,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
+                      ),
+                      IconButton(
+                        icon: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 200),
+                          child: Icon(
+                            isBookmarked
+                                ? Icons.bookmark
+                                : Icons.bookmark_border,
+                            key: ValueKey(isBookmarked),
+                            color: isBookmarked ? Colors.black : Colors.grey,
+                          ),
+                        ),
+                        onPressed: () async {
+                          if (isBookmarked) {
+                            await BookmarkService.removeBookmark(
+                                widget.berita.id);
+                          } else {
+                            await BookmarkService.addBookmark(
+                                widget.berita.id);
+                          }
+
+                          if (!mounted) return;
+                          setState(() {
+                            isBookmarked = !isBookmarked;
+                          });
+                        },
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 16),
@@ -59,10 +117,10 @@ class NewsDetailScreen extends StatelessWidget {
                   // Source & time
                   Row(
                     children: [
-                      Image.network(berita.imageUrl, width: 20),
+                      Image.network(widget.berita.imageUrl, width: 20),
                       const SizedBox(width: 8),
                       Text(
-                        berita.full_name,
+                        widget.berita.full_name,
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                       const SizedBox(width: 12),
@@ -70,7 +128,7 @@ class NewsDetailScreen extends StatelessWidget {
                           size: 14, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
-                        berita.tanggal.toIso8601String(),
+                        widget.berita.tanggal.toIso8601String(),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -78,9 +136,9 @@ class NewsDetailScreen extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
-                  // Dummy content
+                  // Content
                   Text(
-                    berita.isi,
+                    widget.berita.isi,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],

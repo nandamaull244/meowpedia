@@ -56,7 +56,7 @@ class NewsDetailScreenUser extends StatelessWidget {
                 ),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: Image.asset(
+              background: Image.network(
                 berita.imageUrl,
                 fit: BoxFit.cover,
               ),
@@ -86,7 +86,7 @@ class NewsDetailScreenUser extends StatelessWidget {
                   const SizedBox(height: 16),
                   Row(
                     children: [
-                      Image.asset(berita.imageUrl, width: 20),
+                      Image.network(berita.imageUrl, width: 20),
                       const SizedBox(width: 8),
                       Text(berita.full_name,
                           style: Theme.of(context).textTheme.bodySmall),

@@ -24,16 +24,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     _loadUserPosts();
   }
 
+  Future<void> _loadUserPosts() async {
+    final data = await BeritaServiceUser.getBeritaUser();
+    if (!mounted) return;
 
-Future<void> _loadUserPosts() async {
-  final data = await BeritaServiceUser.getBeritaUser();
-  if (!mounted) return;
+    setState(() {
+      userPosts = data;
+      isLoading = false;
+    });
+  }
 
-  setState(() {
-    userPosts = data;
-    isLoading = false;
-  });
-}
   void _deletePost(NewsModel news) {
     setState(() {
       userPosts.remove(news);
@@ -41,18 +41,18 @@ Future<void> _loadUserPosts() async {
   }
 
   Future<void> _logout() async {
-  await AuthService().logout();
+    await AuthService().logout();
 
-  if (!mounted) return;
+    if (!mounted) return;
 
-  Navigator.pushAndRemoveUntil(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const LoginScreen(),
-    ),
-    (route) => false, // hapus semua halaman sebelumnya
-  );
-}
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const LoginScreen(),
+      ),
+      (route) => false, // hapus semua halaman sebelumnya
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,8 +113,7 @@ Future<void> _loadUserPosts() async {
                       children: [
                         const CircleAvatar(
                           radius: 40,
-                          backgroundImage:
-                              AssetImage('assets/logo.jpeg'),
+                          backgroundImage: AssetImage('assets/logo.jpeg'),
                         ),
                         const SizedBox(width: 16),
                         Column(
@@ -122,9 +121,7 @@ Future<void> _loadUserPosts() async {
                           children: [
                             Text(
                               user.username,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium,
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
                             const SizedBox(height: 4),
                             Text(
@@ -149,22 +146,28 @@ Future<void> _loadUserPosts() async {
                   ),
 
                   const SizedBox(height: 12),
-                  if(isLoading)
-                     Center(child: CircularProgressIndicator(color: Theme.of(context).primaryColor)),
-                  if(userPosts.isEmpty && !isLoading)
+                  if (isLoading)
+                    Center(
+                        child: CircularProgressIndicator(
+                            color: Theme.of(context).primaryColor)),
+                  if (userPosts.isEmpty && !isLoading)
                     Center(
                       child: Text(
                         'No posts available',
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: Colors.grey),
                       ),
-                    ), 
+                    ),
 
                   // 📰 POSTS GRID
-                   GridView.builder(
+                  GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: userPosts.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 6,
                       mainAxisSpacing: 6,

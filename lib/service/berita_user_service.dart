@@ -17,6 +17,7 @@ class BeritaServiceUser {
           id_berita,
           judul,
           isi_berita,
+          created_at,
           kategori:id_kategori (
             nama_kategori
           ),
@@ -24,7 +25,7 @@ class BeritaServiceUser {
             username,
             full_name
           ),
-          gammbar: id_gambar (
+          gambar: id_gambar (
             nama_file,
             image_url
 

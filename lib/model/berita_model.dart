@@ -22,7 +22,18 @@ class BeritaModel {
   factory BeritaModel.fromMap(Map<String, dynamic> map) {
     final kategori = map['kategori'];
     final users = map['users'];
+
     final gambar = map['gambar'];
+
+    String imageUrl = 'https://via.placeholder.com/300';
+
+    if (gambar is List && gambar.isNotEmpty) {
+      imageUrl = gambar.first['image_url'] ?? imageUrl;
+    } else if (gambar is Map) {
+      imageUrl = gambar['image_url'] ?? imageUrl;
+    } else if (map['image_url'] != null) {
+      imageUrl = map['image_url'];
+    }
 
     return BeritaModel(
       id: map['id_berita'],
@@ -31,8 +42,7 @@ class BeritaModel {
       kategoriNama: kategori?['nama_kategori'] ?? '-',
       username: users?['username'] ?? users?['full_name'] ?? '-',
       full_name: users?['full_name'] ?? '-',
-      imageUrl: gambar?['image_url'] ??
-          'https://via.placeholder.com/300',
+      imageUrl: imageUrl,
       tanggal: map['created_at'] != null
           ? DateTime.parse(map['created_at'])
           : DateTime.now(),
