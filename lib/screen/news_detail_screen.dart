@@ -91,7 +91,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                                 ? Icons.bookmark
                                 : Icons.bookmark_border,
                             key: ValueKey(isBookmarked),
-                            color: isBookmarked ? Colors.black : Colors.grey,
+                            color: isBookmarked ? Theme.of(context).colorScheme.primary : Colors.grey,
                           ),
                         ),
                         onPressed: () async {
@@ -128,7 +128,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                           size: 14, color: Colors.grey),
                       const SizedBox(width: 4),
                       Text(
-                        widget.berita.tanggal.toIso8601String(),
+                        widget.berita.tanggal.toString(),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],

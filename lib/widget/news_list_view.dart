@@ -13,7 +13,6 @@ class NewsListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
       itemCount: newsList.length,
       itemBuilder: (context, index) {
         return Padding(

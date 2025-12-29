@@ -49,7 +49,7 @@ class _CategoryTabSectionState extends State<CategoryTabSection> {
     final screenHeight = mediaQuery.size.height;
     final paddingTop = mediaQuery.padding.top;
     final paddingBottom = mediaQuery.padding.bottom;
-    const navBarHeight = 252.0;
+    const navBarHeight = 237.0;
 
     final availableHeight =
         screenHeight - paddingTop - paddingBottom - navBarHeight;

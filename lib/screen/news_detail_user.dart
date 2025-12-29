@@ -94,7 +94,7 @@ class NewsDetailScreenUser extends StatelessWidget {
                       const Icon(Icons.access_time,
                           size: 14, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text(berita.tanggal.toIso8601String(),
+                      Text(berita.tanggal.toString(),
                           style: Theme.of(context).textTheme.bodySmall),
                     ],
                   ),

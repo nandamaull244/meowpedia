@@ -76,7 +76,7 @@ class NewsCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    news.username,
+                    news.full_name,
                     style: Theme.of(context)
                         .textTheme
                         .bodySmall
@@ -89,7 +89,7 @@ class NewsCard extends StatelessWidget {
                   const Icon(Icons.access_time, size: 14, color: Colors.grey),
                   const SizedBox(width: 4),
                   Text(
-                    news.tanggal.toIso8601String(),
+                    news.tanggal.toString(),
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ],
