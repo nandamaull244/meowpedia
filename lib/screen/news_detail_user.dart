@@ -115,8 +115,7 @@ class NewsDetailScreenUser extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-                    'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                    berita.isi,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ],
