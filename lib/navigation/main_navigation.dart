@@ -24,7 +24,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   late final List<Widget> _pages = [
     HomeScreen(key: _homeKey),
-    const SearchScreen(),
+    //const SearchScreen(),
     const SizedBox(),
     BookmarkScreen(key: _bookmarkKey),
     ProfileScreen(key: _profileKey),
@@ -44,7 +44,7 @@ class _MainNavigationState extends State<MainNavigation> {
   // function untuk go to bookmark
   void goToBookmark({bool refresh = false}) {
     setState(() {
-      _currentIndex = 3;
+      _currentIndex = 2;
     });
 
     if (refresh) {
@@ -81,9 +81,9 @@ class _MainNavigationState extends State<MainNavigation> {
         onTap: (index) {
           if (index == 0) {
             goToHome(refresh: true);
-          } else if (index == 2) {
+          } else if (index == 1) {
             goToUpload(); // 🔥 UPLOAD
-          } else if (index == 3) {
+          } else if (index == 2) {
             goToBookmark(refresh: true);
           } else {
             setState(() => _currentIndex = index);
@@ -96,11 +96,11 @@ class _MainNavigationState extends State<MainNavigation> {
             activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search_outlined),
-            activeIcon: Icon(Icons.search),
-            label: 'Search',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.search_outlined),
+          //   activeIcon: Icon(Icons.search),
+          //   label: 'Search',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box_outlined),
             activeIcon: Icon(Icons.add_box),

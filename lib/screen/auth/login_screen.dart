@@ -55,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 8),
                   AuthTextField(
                     controller: _usernameController,
-                    hint: 'Vinna123',
+                    hint: 'username',
                   ),
                   const SizedBox(height: 20),
                   AuthLabel(text: 'Password'),

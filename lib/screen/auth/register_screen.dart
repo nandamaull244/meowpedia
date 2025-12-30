@@ -109,14 +109,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 8),
                   AuthTextField(
                     controller: _fullNameController,
-                    hint: 'vinna asomethink jr',
+                    hint: 'full name',
                   ),
                   const SizedBox(height: 20),
                   AuthLabel(text: 'Username'),
                   const SizedBox(height: 8),
                   AuthTextField(
                     controller: _usernameController,
-                    hint: 'vinna321',
+                    hint: 'username',
                   ),
                   const SizedBox(height: 20),
                   AuthLabel(text: 'Date of Birth'),
