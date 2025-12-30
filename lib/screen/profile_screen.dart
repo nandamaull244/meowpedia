@@ -11,10 +11,10 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   List<BeritaModel> userPosts = [];
   bool isLoading = true;
 
@@ -22,6 +22,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _loadUserPosts();
+  }
+
+  Future<void> refresh() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    await _loadUserPosts();
   }
 
   Future<void> _loadUserPosts() async {
@@ -183,6 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             MaterialPageRoute(
                               builder: (_) => NewsDetailScreenUser(
                                 berita: news,
+                                isFromProfile: true,
                               ),
                             ),
                           );

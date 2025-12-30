@@ -5,7 +5,6 @@ import 'package:meowmedia/screen/profile_screen.dart';
 import 'package:meowmedia/screen/search_screen.dart';
 import 'package:meowmedia/screen/upload_screen.dart';
 
-
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
 
@@ -13,20 +12,62 @@ class MainNavigation extends StatefulWidget {
   State<MainNavigation> createState() => _MainNavigationState();
 }
 
-
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
   final GlobalKey<BookmarkScreenState> _bookmarkKey =
       GlobalKey<BookmarkScreenState>();
+  final GlobalKey<HomeScreenState> _homeKey = 
+      GlobalKey<HomeScreenState>();
+  final GlobalKey<ProfileScreenState> _profileKey =
+    GlobalKey<ProfileScreenState>();
 
   late final List<Widget> _pages = [
-    const HomeScreen(),
+    HomeScreen(key: _homeKey),
     const SearchScreen(),
-    const UploadScreen(),
+    const SizedBox(),
     BookmarkScreen(key: _bookmarkKey),
-    const ProfileScreen(),  
+    ProfileScreen(key: _profileKey),
   ];
+
+  // function untuk go to home
+  void goToHome({bool refresh = false}) {
+    setState(() {
+      _currentIndex = 0;
+    });
+
+    if (refresh) {
+      _homeKey.currentState?.refresh();
+    }
+  }
+
+  // function untuk go to bookmark
+  void goToBookmark({bool refresh = false}) {
+    setState(() {
+      _currentIndex = 3;
+    });
+
+    if (refresh) {
+      _bookmarkKey.currentState?.refresh();
+    }
+  }
+
+  // go to upload
+  Future<void> goToUpload() async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const UploadScreen(),
+      ),
+    );
+    // kalau upload berhasil
+    if (result == true) {
+      setState(() => _currentIndex = 0);
+      _homeKey.currentState?.refresh();
+      _profileKey.currentState?.refresh();
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,13 +79,14 @@ class _MainNavigationState extends State<MainNavigation> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-
-          // 🔥 trigger refresh saat masuk tab bookmark
-          if (index == 3) {
-            _bookmarkKey.currentState?.refresh();
+          if (index == 0) {
+            goToHome(refresh: true);
+          } else if (index == 2) {
+            goToUpload(); // 🔥 UPLOAD
+          } else if (index == 3) {
+            goToBookmark(refresh: true);
+          } else {
+            setState(() => _currentIndex = index);
           }
         },
         type: BottomNavigationBarType.fixed,
@@ -79,4 +121,3 @@ class _MainNavigationState extends State<MainNavigation> {
     );
   }
 }
-

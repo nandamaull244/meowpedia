@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:meowmedia/model/berita_model.dart';
 import 'package:meowmedia/model/news_model.dart';
+import 'package:meowmedia/service/berita_user_service.dart';
 
 class NewsDetailScreenUser extends StatelessWidget {
   final BeritaModel berita;
@@ -12,6 +13,39 @@ class NewsDetailScreenUser extends StatelessWidget {
     this.isFromProfile = false,
   });
 
+  Future<void> _confirmDelete(BuildContext context) async {
+  final confirm = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Hapus Berita'),
+      content: const Text('Apakah Anda yakin ingin menghapus berita ini?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Batal'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text(
+            'Hapus',
+            style: TextStyle(color: Colors.red),
+          ),
+        ),
+      ],
+    ),
+  );
+
+  if (confirm == true) {
+    // 🔥 DELETE KE SUPABASE
+    await BeritaServiceUser.deleteBerita(berita.id);
+
+    if (context.mounted) {
+      Navigator.pop(context, true); // kirim status terhapus
+    }
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,39 +56,6 @@ class NewsDetailScreenUser extends StatelessWidget {
             expandedHeight: 260,
             pinned: true,
             leading: const BackButton(color: Colors.white),
-            actions: [
-              if (isFromProfile)
-                IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.white),
-                  onPressed: () async {
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        title: const Text('Delete Post'),
-                        content: const Text(
-                            'Are you sure you want to delete this post?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, false),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx, true),
-                            child: const Text(
-                              'Delete',
-                              style: TextStyle(color: Colors.red),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-
-                    if (confirm == true) {
-                      Navigator.pop(context, true); // return deleted
-                    }
-                  },
-                ),
-            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
                 berita.imageUrl,
@@ -77,11 +78,25 @@ class NewsDetailScreenUser extends StatelessWidget {
                         ),
                   ),
                   const SizedBox(height: 8),
-                  Text(
-                    berita.judul,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          berita.judul,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.w600),
                         ),
+                      ),
+                      if (isFromProfile)
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          tooltip: 'Hapus Berita',
+                          onPressed: () => _confirmDelete(context),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   Row(

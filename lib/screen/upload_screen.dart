@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meowmedia/model/kategori_model.dart';
-import 'package:meowmedia/screen/homescreen.dart';
+//import 'package:meowmedia/screen/homescreen.dart';
 import 'package:meowmedia/service/kategori_service.dart';
 import 'package:meowmedia/service/upload_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -109,12 +109,7 @@ void _showSuccessDialog() {
             Navigator.of(context).pop(); // close dialog
 
             resetForm();
-            print(Supabase.instance.client.auth.currentSession);
-
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-              (route) => false,
-            );
+            Navigator.of(context).pop(true);
           },
           child: const Text('OK'),
         ),

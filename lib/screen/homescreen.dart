@@ -8,12 +8,21 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomeScreen> createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   final _searchController = TextEditingController();
 
+  // key untuk force refresh
+  Key _categoryKey = UniqueKey();
+
+  // 🔥 DIPANGGIL DARI MAIN NAVIGATION
+  Future<void> refresh() async {
+    setState(() {
+      _categoryKey = UniqueKey(); // FORCE rebuild
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,7 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             const SizedBox(height: 20),
-              CategoryTabSection(),
+              // key dipasang disini
+              CategoryTabSection(key: _categoryKey),
             ],
           ),
         )
